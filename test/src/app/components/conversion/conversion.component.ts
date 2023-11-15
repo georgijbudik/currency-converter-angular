@@ -12,6 +12,9 @@ import { FormsModule } from '@angular/forms';
     <div
       class="bg-blue-200 border border-blue-300 rounded p-4 justify-center items-center max-w-screen-sm"
     >
+      <div class="flex justify-center">
+        <h2 class="font-bold text-xl">Convert currencies</h2>
+      </div>
       <div class="flex rounded my-4">
         <input
           type="number"
