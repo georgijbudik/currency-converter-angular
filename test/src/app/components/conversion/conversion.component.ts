@@ -1,67 +1,45 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  forwardRef,
+} from '@angular/core';
 import { Rate } from '../../models/Rate';
-import { NgFor, NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { LoadingComponent } from '../loading/loading.component';
+import { CustomInputComponent } from '../custom-input/custom-input.component';
+import { CustomSelectComponent } from '../custom-select/custom-select.component';
 
 @Component({
   selector: 'app-conversion',
   standalone: true,
-  imports: [NgIf, NgFor, FormsModule],
-  template: `<div class="flex items-center justify-center m-4 pt-8">
-    @if(ready) {
-    <div
-      class="bg-blue-200 border border-blue-300 rounded p-4 justify-center items-center max-w-screen-sm"
-    >
-      <div class="flex justify-center">
-        <h2 class="font-bold text-xl">Convert currencies</h2>
-      </div>
-      <div class="flex rounded my-4">
-        <input
-          type="number"
-          name="inpt1"
-          maxlength="5"
-          [(ngModel)]="inpt1"
-          (ngModelChange)="onchangeVA()"
-          class="text-2xl p-5 focus:outline-blue-400"
-        />
-        <select
-          [(ngModel)]="sel1"
-          (change)="onchangeA()"
-          class="outline-none text-2xl px-4 py-2"
-        >
-          @for(rate of rates; track rate.cc) {
-          <option>{{ rate.cc }}</option>
-          }
-        </select>
-      </div>
-      <div class="flex rounded my-4">
-        <input
-          type="number"
-          name="inpt2"
-          [(ngModel)]="inpt2"
-          (ngModelChange)="onchangeVB()"
-          class="text-2xl p-5 focus:outline-blue-400"
-        />
-        <select
-          [(ngModel)]="sel2"
-          (change)="onchangeB()"
-          class="outline-none text-2xl px-4 py-2"
-        >
-          @for(rate of rates; track rate.cc) {
-          <option>{{ rate.cc }}</option>
-          }
-        </select>
-      </div>
-    </div>
-    } @else {
-    <div class="mt-4 text-gray-700 text-lg">Loading...</div>
-    }
-  </div>`,
+  imports: [
+    FormsModule,
+    LoadingComponent,
+    ReactiveFormsModule,
+    CustomInputComponent,
+    CustomSelectComponent,
+  ],
+  templateUrl: './conversion.component.html',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => ConversionComponent),
+      multi: true,
+    },
+  ],
 })
-export class ConversionComponent implements OnChanges {
+export class ConversionComponent implements ControlValueAccessor {
   constructor() {}
 
   @Input() data: Rate[] = [];
+  @Output() inputChange: EventEmitter<number> = new EventEmitter<number>();
 
   rates: Rate[] = [new Rate('Curr name1', 1, '---')];
   currency1: Rate = this.rates[0];
@@ -72,6 +50,25 @@ export class ConversionComponent implements OnChanges {
   inpt2: number = 1;
 
   ready: boolean = false;
+
+  private onChange: any = () => {};
+  writeValue(value: number): void {
+    this.inpt1 = value;
+  }
+  registerOnChange(fn: (value: number) => void): void {
+    this.onChange = fn;
+  }
+  getRates(rates: Rate[]) {
+    if (rates && rates.length > 0) {
+      return rates.map((rate) => ({
+        cc: rate.cc,
+        txt: rate.txt,
+        rate: rate.rate,
+      }));
+    }
+    return [];
+  }
+  registerOnTouched(fn: any): void {}
 
   ngOnChanges() {
     if (this.data.length > 1) {
@@ -93,6 +90,8 @@ export class ConversionComponent implements OnChanges {
       Math.round(
         ((this.currency1.rate * this.inpt1) / this.currency2.rate) * 10000
       ) / 10000;
+    this.onChange(this.inpt1);
+    this.inputChange.emit(this.inpt1);
   }
   onchangeVB() {
     this.inpt1 =
@@ -101,14 +100,18 @@ export class ConversionComponent implements OnChanges {
       ) / 10000;
   }
 
-  onchangeA() {
+  onchangeA(event: Event) {
+    const selectValue = (event.target as HTMLSelectElement).value;
+    this.sel1 = selectValue;
     const c1 = this.rates.find((item: Rate) => item.cc === this.sel1);
     if (c1) {
       this.currency1 = c1;
     }
     this.onchangeVA();
   }
-  onchangeB() {
+  onchangeB(event: Event) {
+    const selectValue = (event.target as HTMLSelectElement).value;
+    this.sel2 = selectValue;
     const c2 = this.rates.find((item: Rate) => item.cc === this.sel2);
     if (c2) {
       this.currency2 = c2;

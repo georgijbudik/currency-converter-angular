@@ -1,0 +1,9 @@
+<select
+  [value]="value"
+  (change)="onSelectChange($event)"
+  class="outline-none text-2xl px-4 py-2 h-full"
+>
+  @for(rate of rates; track rate.cc) {
+  <option>{{ rate.cc }}</option>
+  }
+</select>

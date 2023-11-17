@@ -4,21 +4,13 @@ import { MyApiService } from './services/api';
 import { Rate } from './models/Rate';
 import { ConversionComponent } from './components/conversion/conversion.component';
 import { NgIf } from '@angular/common';
+import { LoadingComponent } from './components/loading/loading.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, ConversionComponent, NgIf],
-  template: `
-    <div class="container mx-auto">
-      @if(ready){
-      <app-header [USD]="USD.rate" [EUR]="EUR.rate" />
-      <app-conversion [data]="data" />
-      } @else {
-      <div>Loading...</div>
-      }
-    </div>
-  `,
+  imports: [HeaderComponent, ConversionComponent, NgIf, LoadingComponent],
+  templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
   constructor(private myApi: MyApiService) {}

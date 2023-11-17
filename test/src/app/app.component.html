@@ -1,0 +1,10 @@
+<div class="container mx-auto">
+  @if(ready){
+  <app-header [USD]="USD.rate" [EUR]="EUR.rate" />
+  <app-conversion [data]="data" />
+  } @else {
+  <div class="flex justify-center">
+    <app-loading></app-loading>
+  </div>
+  }
+</div>

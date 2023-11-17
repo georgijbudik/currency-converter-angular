@@ -1,0 +1,37 @@
+<div class="flex items-center justify-center m-4 pt-8">
+  @if(ready) {
+  <div
+    class="bg-blue-200 border border-blue-300 rounded p-4 justify-center items-center max-w-screen-sm"
+  >
+    <div class="flex justify-center">
+      <h2 class="font-bold text-xl">Convert currencies</h2>
+    </div>
+    <div class="flex rounded my-4">
+      <app-custom-input
+        [(ngModel)]="inpt1"
+        (input)="onchangeVA()"
+      ></app-custom-input>
+      <app-custom-select
+        [rates]="getRates(rates)"
+        [(ngModel)]="sel1"
+        (change)="onchangeA($event)"
+      >
+      </app-custom-select>
+    </div>
+    <div class="flex rounded my-4">
+      <app-custom-input
+        [(ngModel)]="inpt2"
+        (input)="onchangeVB()"
+      ></app-custom-input>
+      <app-custom-select
+        [rates]="getRates(rates)"
+        [(ngModel)]="sel2"
+        (change)="onchangeB($event)"
+      >
+      </app-custom-select>
+    </div>
+  </div>
+  } @else {
+  <app-loading></app-loading>
+  }
+</div>
